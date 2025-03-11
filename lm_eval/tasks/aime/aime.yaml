@@ -1,0 +1,37 @@
+tag:
+  - math_word_problems
+task: aime_1983_2024
+dataset_path: di-zhang-fdu/AIME_1983_2024
+dataset_name: default
+output_type: generate_until
+training_split: train
+test_split: train
+doc_to_text: "You are a helpful and harmless assistant. You are Qwen developed by Alibaba. You should think step-by-step. Return final answer within \\boxed{}.\n{{Question}}"
+doc_to_target: "{{Answer}}" 
+metric_list:
+  - metric: exact_match
+    aggregation: mean
+    higher_is_better: true
+    ignore_case: true
+    ignore_punctuation: false
+    regexes_to_ignore:
+      - ","
+      - "\\$"
+      - "(?s).*#### "
+      - "\\.$"
+generation_kwargs:
+  until:
+    - "Question:"
+    - "</s>"
+    - "<|im_end|>"
+  do_sample: True
+  temperature: 1.0
+repeats: 1
+filter_list:
+  - name: "strict-match"
+    filter:
+      - function: "regex"
+        regex_pattern: "\\boxed{([^}]*)}"  # Extracts only the content inside \boxed{}
+      - function: "take_first"
+metadata:
+  version: 3.0
