@@ -1,37 +1,31 @@
 tag:
   - math_word_problems
-task: aime_1983_2024
-dataset_path: di-zhang-fdu/AIME_1983_2024
+task: hard_batch_234
+dataset_path: radna/hard_batch_234
 dataset_name: default
 output_type: generate_until
 training_split: train
 test_split: train
-doc_to_text: "You are a helpful and harmless assistant. You are Qwen developed by Alibaba. You should think step-by-step. Return final answer within \\boxed{}.\n{{Question}}"
-doc_to_target: "{{Answer}}" 
+doc_to_text: "You are a helpful and harmless assistant. You are Qwen developed by Alibaba. You should think step-by-step. Return final answer within \\boxed{}.\nProblem: {{problem}}"
+doc_to_target: "{{answer}}" 
 metric_list:
   - metric: exact_match
     aggregation: mean
     higher_is_better: true
-    ignore_case: true
-    ignore_punctuation: false
-    regexes_to_ignore:
-      - ","
-      - "\\$"
-      - "(?s).*#### "
-      - "\\.$"
 generation_kwargs:
   until:
-    - "Question:"
-    - "</s>"
-    - "<|im_end|>"
+    - "Problem:"
   do_sample: True
   temperature: 1.0
-repeats: 1
+  top_p: 0.90
+  min_p: 0.10
+  max_new_tokens: 12288
 filter_list:
-  - name: "strict-match"
+  - name: "maj@5"
     filter:
       - function: "regex"
-        regex_pattern: "\\boxed{([^}]*)}"  # Extracts only the content inside \boxed{}
+        regex_pattern: "oxed{(.*?)}"  # Extracts only the content inside \boxed{}
+      - function: "majority_vote"
       - function: "take_first"
 metadata:
-  version: 3.0
+  version: 1.0
